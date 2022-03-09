@@ -3,17 +3,17 @@
 //Making a Menu
 
 class Player {
-    constructor(name, position){
+    constructor(name, uscfID){
         this.name = name;
-        this.position = position;
+        this.uscfID = uscfID;
     }
 
-    describe () {
-        return `${this.name} plays ${this.position}.`;
+    describe() {
+        return `${this.name} USCF ID: ${this.uscfID}.`;
     }
 }
 
-class Team {
+class Section {
     constructor(name) {
         this.name = name;
         this.players = [];
@@ -28,14 +28,19 @@ class Team {
     }
 
     describe() {
-        return `${this.name} has ${this.players.length} players.`;
+        let description = 'Section Name: ' + this.name + '\n';
+        
+        for (let i=0; i < this.players.length; i++) {
+            description += i + ') ' + this.players[i].name + '\t\t\t USCF ID:' + this.players[i].uscfID +  '\n';
+        }
+        return description;
     }
 }
 
 class Menu {
     constructor() {
-        this.teams = [];
-        this.selectedTeam = null;
+        this.sections = [];
+        this.selectedSection = null;
     }
 
     start() {
@@ -43,16 +48,16 @@ class Menu {
         while (selection != 0) {
             switch (selection) {
                 case '1':
-                    this.createTeam();
+                    this.createSection();
                     break;
                 case '2':
-                    this.viewTeam();
+                    this.editSection();
                     break;
                 case '3':
-                    this.deleteTeam();
+                    this.deleteSection();
                     break;
                 case '4':
-                    this.displayTeams();
+                    this.displaySection();
                     break;
                 default:
                     selection = 0;
@@ -66,74 +71,83 @@ class Menu {
     showMainMenuOptions() {
         return prompt (`
           0) Exit
-          1) Create New Team
-          2) View Team
-          3) Delete Team
-          4) Display All Teams
+          1) Create New Section
+          2) Edit Section
+          3) Delete Section
+          4) Display All Sections
         `);
     }
 
-    showTeamMenuOptions(teamInfo) {
-        return propt (`
+    showSectionMenuOptions(sectionInfo) {
+        return prompt (`
         0) Back
-        1) Create Player
+        1) Add Player
         2) Deleate Player
         -----------------------------
-        ${teamInfo}
+        ${sectionInfo}
         `);
     }
 
-    displayTeams() {
-        let teamString = '';
-        for (let i = 0; i < this.teams.length; i++){
-            teamString += i + ') ' + this.teams[i].name + '\n';
+    displaySection() {
+        let sectionString = '';
+        for (let i = 0; i < this.sections.length; i++){
+            sectionString += i + ') ' + this.sections[i].name + '\n';
         }
-        alert(teamString);
+        alert(sectionString);
     }
 
-    createTeam() {
-        let name = prompt('Enter name for new team');
-        this.teams.push(new Team(name));
+    createSection() {
+        let name = prompt('Enter name for new section');
+        this.sections.push(new Section(name));
     }
 
-    viewTeam() {
-        let index = prompt ('Enter index of the team you wish to view:');
-        if (index> -1 && index < this.teams.length) {
-            this.selectedTeam = this.teams[index];
-            let description = 'Team Name: ' + this.selectedTeam.name + '\n';
 
-            for (let i=0; i < this.selectedTeam.players.length; i++) {
-                description += i + ') ' + this.selectedTeam.players[i].name + ' - ' + this.selectedTeam.players[i].position + '\n';
-            }
+    editSection() {
+        
+        var editString = 'Enter index of the Section you wish to edit:\n';
 
-            let selection = this.showTeamMenuOptions(description);
-            switch (selection) {
-                case '1':
-                    this.createPlayer();
-                    break;
-                case '2':
-                    this.deletePlayer();
+        for (let i = 0; i < this.sections.length; i++){
+            editString += i + ') ' + this.sections[i].name + '\n';
+        }
+
+        let index = prompt(editString);
+        if (index> -1 && index < this.sections.length) {
+            this.selectedSection = this.sections[index];
+            let description = this.selectedSection.describe();
+            let selection = this.showSectionMenuOptions(description);
+            while (selection != 0){
+                switch (selection) {
+                    case '1':
+                        this.createPlayer();
+                        break;
+                    case '2':
+                        this.deletePlayer();
+                    default:
+                        selection = 0;
+                }
+                description = this.selectedSection.describe();
+                selection = this.showSectionMenuOptions(description);    
             }
         }
     }
 
-    deleteTeam() {
-        let index = prompt('Enter the index of the team you wish to delete:');
-        if (index > -1 && index < this.teams.length) {
-            this.teams.splce(index, 1);
+    deleteSection() {
+        let index = prompt('Enter the index of the section you wish to delete:');
+        if (index > -1 && index < this.sections.length) {
+            this.sections.splice(index, 1);
         }
     }
 
     createPlayer() {
         let name = prompt('Enter name for the new player');
-        let position = prompt('Enter position for new player');
-        this.selectedTeam.players.push(new Player(name, position));
+        let uscfID = prompt('Enter USCF ID for new player');
+        this.selectedSection.players.push(new Player(name, uscfID));
     }
 
     deletePlayer() {
         let index = prompt('Enter the index of the player you wish to delete:');
-        if (index > -1 && index < this.selectedTeam.players.length) {
-            this.selectedTeam.players.splce(index, 1);
+        if (index > -1 && index < this.selectedSection.players.length) {
+            this.selectedSection.players.splice(index, 1);
         }
     }
 
